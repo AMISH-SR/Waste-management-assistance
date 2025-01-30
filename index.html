@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Classification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #image-preview {
+            max-width: 300px;
+            margin-top: 20px;
+            display: none;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload an Image for Classification</h1>
+    <input type="file" id="fileInput" accept="image/*">
+    <br>
+    <img id="image-preview" src="" alt="Image Preview">
+    <br>
+    <button onclick="uploadImage()">Upload & Classify</button>
+    <div id="results"></div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('image-preview').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert('Please select an image to upload.');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    let resultHTML = '<h3>Classification Results:</h3>';
+                    data.results.forEach(result => {
+                        resultHTML += `<p><strong>${result.label}</strong>- Category: ${result.category}</p>`;
+                    });
+                    document.getElementById('results').innerHTML = resultHTML;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
