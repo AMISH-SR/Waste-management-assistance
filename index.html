@@ -9,14 +9,40 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 50px;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fad0c4);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            color: #333;
         }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         #image-preview {
             max-width: 300px;
             margin-top: 20px;
             display: none;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
         #results {
             margin-top: 20px;
+            font-size: 18px;
+        }
+        button {
+            background: #ff6f61;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s ease;
+        }
+        button:hover {
+            background: #d64f4b;
         }
     </style>
 </head>
@@ -41,14 +67,12 @@
                 reader.readAsDataURL(file);
             }
         });
-
         function uploadImage() {
             const fileInput = document.getElementById('fileInput');
             if (!fileInput.files.length) {
                 alert('Please select an image to upload.');
                 return;
             }
-            
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
 
