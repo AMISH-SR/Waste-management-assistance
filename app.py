@@ -7,11 +7,8 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from io import BytesIO
 from PIL import Image
-
 app = Flask(__name__)
-
 model = MobileNetV2(weights='imagenet')
-
 def classify_image(img):
     img = img.resize((224, 224))
     img_array = image.img_to_array(img)
@@ -19,7 +16,6 @@ def classify_image(img):
     img_array = preprocess_input(img_array)
     predictions = model.predict(img_array)
     decoded_predictions = decode_predictions(predictions, top=3)[0]
-
     categories = {
         'plastic': 'Recyclable', 'paper': 'Recyclable', 'bottle': 'Recyclable','jacket':'Recyclable',
         'cardboard': 'Recyclable', 'syringe': 'Composable', 'organic': 'Composable','binder':'Recyclable',
@@ -27,7 +23,6 @@ def classify_image(img):
         'glass': 'Recyclable', 'electronics': 'E-Waste', 'carton': 'Recyclable',
         'crate': 'Recyclable', 'other': 'General Waste'
     }
-
     results = []
     for _, label, _ in decoded_predictions:
         label_lower = label.lower()
@@ -38,13 +33,10 @@ def classify_image(img):
         else:
             category = categories.get(label_lower, 'General Waste')
         results.append({"label": label, "category": category})
-
     return results
-
 @app.route('/')
 def index():
     return render_template('index.html')
-
 @app.route('/upload', methods=['POST'])
 def upload():
     file = request.files['file']
@@ -53,6 +45,5 @@ def upload():
         results = classify_image(img)
         return jsonify({"status": "success", "results": results})
     return jsonify({"status": "error", "message": "No file uploaded"})
-
 if __name__ == '__main__':
     app.run(debug=True)
